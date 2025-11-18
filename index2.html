@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eat Healthy — Fresh Mushrooms & More</title>
+  <style>
+    :root{
+      --bg: #0b0b0d;
+      --accent: #d4af37; /* gold */
+      --accent-600: #b8902e;
+      --muted:#9aa0a6;
+      --card:#111114;
+      --glass: rgba(212,175,55,0.12);
+      --shadow: 0 10px 30px rgba(0,0,0,0.6);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{margin:0;background:var(--bg);color:#f3f4f6;display:flex;flex-direction:column;min-height:100vh;line-height:1.4}
+
+    /* Header */
+    header{padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;background:linear-gradient(180deg,rgba(11,11,13,0.95),rgba(11,11,13,0.85));backdrop-filter: blur(4px);z-index:60}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(180deg, rgba(212,175,55,0.06), rgba(212,175,55,0.03));flex-shrink:0}
+    .title{font-weight:800;font-size:20px;color:#fff}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .controls{display:flex;gap:12px;align-items:center}
+    .search{display:flex;align-items:center;gap:8px;background:#0f1112;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .search input{border:0;background:transparent;outline:none;padding:6px;font-size:14px;color:var(--muted)}
+
+    main{flex:1;padding:28px;max-width:1200px;margin:0 auto;width:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 360px;gap:24px}
+
+    /* Product grid */
+    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:transform .18s ease}
+    .card:hover{transform:translateY(-6px)}
+    .prod-img{height:140px;display:grid;place-items:center}
+    .prod-img img{max-height:120px;max-width:100%;border-radius:8px}
+    .prod-title{font-weight:700;margin:8px 0}
+    .price{font-weight:800;color:var(--accent)}
+    .meta{font-size:13px;color:var(--muted);min-height:36px}
+    .btn{display:inline-block;padding:9px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-600));color:#111}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)}
+    .btn-small{padding:6px 8px;border-radius:8px;font-weight:600}
+
+    /* Cart */
+    .cart-panel{border-radius:12px;padding:16px;background:linear-gradient(180deg,#0b0b0d,#0f0f10);box-shadow:var(--shadow)}
+    .cart-items{max-height:300px;overflow:auto;margin-bottom:12px}
+    .cart-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .cart-row img{width:64px;height:48px;object-fit:cover;border-radius:8px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .summary{background:#0d0d0f;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .tot-row{display:flex;justify-content:space-between;align-items:center}
+
+    /* Product page */
+    .product-page{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .gallery{background:#0f1112;border-radius:12px;padding:14px;display:grid;place-items:center}
+    .thumbs{display:flex;gap:8px;margin-top:8px}
+    .thumbs img{height:60px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
+    .reviews{margin-top:14px}
+    .review{border-top:1px dashed rgba(255,255,255,0.03);padding:10px 0}
+    .size-options{display:flex;gap:8px;margin-top:8px}
+    .size-option{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .size-option.active{border-color:var(--accent);background:rgba(212,175,55,0.06)}
+
+    /* Right floating menu */
+    .right-menu{position:fixed;right:18px;top:140px;width:72px;background:linear-gradient(180deg,#0b0b0d,#0d0d0f);border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,0.6);z-index:90;border:1px solid rgba(212,175,55,0.07)}
+    .rm-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 6px;border-radius:10px;color:var(--muted);cursor:pointer}
+    .rm-item:hover{background:rgba(255,255,255,0.02);color:var(--accent)}
+    .rm-icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(212,175,55,0.06),rgba(212,175,55,0.02));border:1px solid rgba(255,255,255,0.02)}
+    .rm-label{font-size:11px;margin-top:4px;color:var(--muted)}
+    .rm-gallery{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .rm-gallery img{width:52px;height:40px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.03)}
+
+    /* responsive */
+    @media (max-width:1000px){main{grid-template-columns:1fr} .right-menu{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <g transform="translate(6 6)">
+            <ellipse cx="26" cy="18" rx="24" ry="14" fill="#1b1b1c" />
+            <path d="M8 27c0 8 9 13 18 13s18-5 18-13" fill="#1e1e1f" />
+            <rect x="23" y="26" width="6" height="18" rx="3" fill='#d4af37' />
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="title">Eat Healthy</div>
+        <div class="subtitle">Premium Mushrooms & Produce</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search" role="search">
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="search" placeholder="Search products, e.g. oyster" aria-label="Search products">
+      </div>
+      <select id="sort" aria-label="Sort products">
+        <option value="popular">Sort: Popular</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+      </select>
+      <button class="btn btn-ghost" id="view-cart">Cart (<span id="cart-count">0</span>)</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin:0">Products</h2>
+        <div class="small">All prices in ₹ — Demo site.</div>
+      </div>
+
+      <div class="products" id="product-list"></div>
+    </section>
+
+    <aside>
+      <div class="cart-panel" aria-label="Cart summary">
+        <h3 style="margin-top:0">Your Cart</h3>
+        <div class="cart-items" id="cart-items"></div>
+        <div id="cart-empty" class="small" style="display:none">Your cart is empty. Add tasty mushrooms!</div>
+        <div class="summary" style="margin-top:8px">
+          <div class="tot-row"><div class="small">Subtotal</div><div>₹<span id="subtotal">0.00</span></div></div>
+          <div class="tot-row"><div class="small">Delivery</div><div>₹<span id="delivery-fee">0.00</span></div></div>
+          <div class="tot-row"><div class="small">Tax (5%)</div><div>₹<span id="tax">0.00</span></div></div>
+          <hr style="border:none;border-top:1px dashed rgba(255,255,255,0.03);margin:8px 0">
+          <div class="tot-row" style="font-weight:800"><div>Total</div><div>₹<span id="total">0.00</span></div></div>
+        </div>
+        <div style="margin-top:12px">
+          <label for="name">Full name</label>
+          <input type="text" id="customer-name" placeholder="Your name" autocomplete="name" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-top:6px;background:transparent;color:inherit">
+          <label for="address" style="margin-top:8px;display:block">Address</label>
+          <input type="text" id="customer-address" placeholder="Flat, street, city" autocomplete="street-address" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-top:6px;background:transparent;color:inherit">
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <button class="btn btn-primary" id="checkout-btn">Checkout</button>
+          </div>
+          <div id="order-result" style="display:none;margin-top:10px"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Right floating menu with profile, orders, help and cart + oyster photos -->
+  <div class="right-menu" aria-hidden="false">
+    <div class="rm-item" id="rm-profile" title="Profile">
+      <div class="rm-icon">👤</div>
+      <div class="rm-label">Profile</div>
+    </div>
+    <div class="rm-item" id="rm-orders" title="My Orders">
+      <div class="rm-icon">📦</div>
+      <div class="rm-label">Orders</div>
+    </div>
+    <div class="rm-item" id="rm-help" title="Help">
+      <div class="rm-icon">❓</div>
+      <div class="rm-label">Help</div>
+    </div>
+    <div class="rm-item" id="rm-cart" title="Cart">
+      <div class="rm-icon">🛒</div>
+      <div class="rm-label">Cart</div>
+    </div>
+
+    <div class="rm-gallery" aria-hidden="false">
+      <!-- real oyster mushroom photos (Unsplash) -->
+      <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=60" alt="oyster mushroom 1">
+      <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=400&q=60" alt="oyster mushroom 2">
+      <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=400&q=60" alt="oyster mushroom 3">
+    </div>
+  </div>
+
+  <footer style="position:relative;z-index:20">
+    © <span id="year"></span> Eat Healthy — Demo site. Orders are simulated.
+  </footer>
+
+  <script>
+    // --- PRODUCTS with sizes, info, and reviews ---
+    const PRODUCTS = [
+      {id:1,name:'White Button Mushrooms',basePrice:89,desc:'Fresh white mushrooms, cleaned and ready. Great for soups and salads.',category:'single',images:[],sizes:[{label:'250g',mult:1},{label:'500g',mult:1.8}],info:'Store in a paper bag in the fridge. Use within 4 days.',reviews:[{by:'Priya',rating:5,txt:'Very fresh! Loved the texture.'},{by:'Rohan',rating:4,txt:'Good quality, delivered on time.'}]},
+      {id:2,name:'Shiitake Mushrooms',basePrice:149,desc:'Earthy shiitake — great for stir-fries and broths.',category:'single',images:[],sizes:[{label:'200g',mult:1},{label:'400g',mult:1.9}],info:'Best when sautéed. Rinse lightly before use.',reviews:[{by:'Asha',rating:5,txt:'Aromatic and tasty.'}]},
+      {id:3,name:'Portobello',basePrice:99,desc:'Large meaty cap — perfect grilled.',category:'single',images:[],sizes:[{label:'1 pc',mult:1},{label:'2 pcs',mult:1.9}],info:'Great for grilling. Brush with oil and season.',reviews:[]},
+      {id:4,name:'Mixed Mushroom Pack',basePrice:219,desc:'A mix: button, shiitake, oyster. Ready to cook.',category:'pack',images:[],sizes:[{label:'400g',mult:1}],info:'A variety pack for recipes that need complex flavor.',reviews:[{by:'Sahil',rating:5,txt:'Worth the price.'}]},
+      {id:5,name:'Oyster Mushrooms',basePrice:129,desc:'Delicate flavor, quick to cook.',category:'single',images:[],sizes:[{label:'200g',mult:1},{label:'400g',mult:1.85}],info:'Delicate; handle gently.',reviews:[]},
+      {id:6,name:'Mushroom Meal Kit (2 servings)',basePrice:299,desc:'Includes spices & recipe card — ready in 20 min',category:'kit',images:[],sizes:[{label:'2 servings',mult:1}],info:'Includes dried spices; add fresh cream if desired.',reviews:[{by:'Neha',rating:5,txt:'Recipe was delicious.'}]}
+    ];
+
+    // generate images (dataURLs) for each product
+    PRODUCTS.forEach((p,i)=>{ p.images = [makeMushroomDataURL(i), makeMushroomDataURL(i+2)]; p.price = p.basePrice; });
+
+    // CART
+    let cart = JSON.parse(localStorage.getItem('eathealthy_cart')||'{}');
+
+    // BASIC ROUTER: #/ or #product-{id}
+    function router(){
+      const hash = location.hash || '#/';
+      if(hash.startsWith('#product-')){
+        const id = Number(hash.split('-')[1]); renderProductPage(id);
+      } else {
+        renderHome();
+      }
+    }
+
+    // HOME: products grid + cart sidebar
+    function renderHome(){
+      const productListEl = document.getElementById('product-list');
+      productListEl.innerHTML = '';
+      renderProductsGrid(); updateCartUI(); attachHomeEvents();
+    }
+
+    function renderProductsGrid(list=PRODUCTS){
+      const wrap = document.getElementById('product-list'); wrap.innerHTML='';
+      for(const p of list){
+        const el = document.createElement('div'); el.className='card';
+        const price = p.basePrice.toFixed(0);
+        el.innerHTML = `
+          <div class="prod-img"><img src="${p.images[0]}" alt="${p.name}"></div>
+          <div class="prod-title">${p.name}</div>
+          <div class="meta">${p.desc}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div class="price">₹${price}</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn btn-primary" data-add='${p.id}'>Add</button>
+              <button class="btn btn-ghost" data-view='${p.id}'>Details</button>
+            </div>
+          </div>
+        `;
+        wrap.appendChild(el);
+      }
+    }
+
+    // PRODUCT PAGE
+    function renderProductPage(id){
+      const p = PRODUCTS.find(x=>x.id===id); if(!p){ location.hash = '#/'; return; }
+      const main = document.getElementById('main');
+      const sizesHtml = p.sizes.map((s,idx)=>`<div class="size-option" data-idx="${idx}">${s.label}</div>`).join('');
+      main.innerHTML = `
+        <div class="product-page">
+          <div>
+            <a href="#/">← Back to products</a>
+            <div class="gallery">
+              <img id="primary-img" src="${p.images[0]}" alt="${p.name}" style="max-width:100%;max-height:320px;border-radius:8px">
+              <div class="thumbs">${p.images.map((im,i)=>`<img src='${im}' data-i='${i}'>`).join('')}</div>
+            </div>
+            <h1 style="margin-top:12px">${p.name}</h1>
+            <div class="small">${p.desc}</div>
+            <div style="margin-top:10px"><strong>Product info</strong><div class="small">${p.info}</div></div>
+
+            <div style="margin-top:12px">
+              <strong>Choose size</strong>
+              <div class="size-options" id="size-options">${sizesHtml}</div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <div style="font-size:20px;font-weight:800">₹<span id="page-price">${p.basePrice.toFixed(2)}</span></div>
+              <div style="margin-left:auto">Quantity <input id="page-qty" type="number" value="1" min="1" style="width:70px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)"></div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn btn-primary" id="page-add">Add to cart</button>
+              <button class="btn btn-ghost" id="page-buy">Buy now</button>
+            </div>
+
+            <div class="reviews" id="reviews">
+              <h3>Reviews</h3>
+              <div id="reviews-list">${p.reviews.map(r=>`<div class='review'><strong>${r.by}</strong> — ${'★'.repeat(r.rating)}<div class='small'>${r.txt}</div></div>`).join('')}</div>
+              <div style="margin-top:10px">
+                <strong>Add a review</strong>
+                <div style="margin-top:6px"><input id="rev-name" placeholder="Your name" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);width:200px;color:inherit;background:transparent"></div>
+                <div style="margin-top:6px"><select id="rev-rating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+                <div style="margin-top:6px"><textarea id="rev-txt" rows="3" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit" placeholder="Write a short review"></textarea></div>
+                <div style="margin-top:6px"><button class="btn btn-primary" id="rev-submit">Submit review</button></div>
+              </div>
+            </div>
+
+          </div>
+          <aside>
+            <div class="cart-panel">
+              <h3 style="margin-top:0">Buy</h3>
+              <div style="display:grid;gap:6px">
+                <div><strong>${p.name}</strong></div>
+                <div class="small">${p.desc}</div>
+                <div style="margin-top:6px"><div class="small">Selected: <span id="sel-size">${p.sizes[0].label}</span></div></div>
+                <div style="margin-top:6px" class="tot-row"><div class="small">Price</div><div>₹<span id="sel-price">${p.basePrice.toFixed(2)}</span></div></div>
+                <div style="margin-top:6px"><label>Quantity</label><input id="sel-qty" type="number" value="1" min="1" style="width:70px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)"></div>
+                <div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" id="aside-add">Add to cart</button><button class="btn btn-ghost" id="aside-buy">Buy now</button></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      `;
+
+      // attach interactions
+      attachProductPageEvents(p);
+    }
+
+    // attach events on the product page
+    function attachProductPageEvents(p){
+      // thumbnail clicks
+      document.querySelectorAll('.thumbs img').forEach(img=> img.addEventListener('click', e=>{
+        document.getElementById('primary-img').src = e.target.src;
+      }));
+
+      // size selection logic
+      const sizeEls = document.querySelectorAll('.size-option');
+      let selIdx = 0; sizeEls.forEach((el,idx)=>{
+        if(idx===0) el.classList.add('active');
+        el.addEventListener('click', ()=>{ sizeEls.forEach(x=>x.classList.remove('active')); el.classList.add('active'); selIdx=idx; updatePrice(); document.getElementById('sel-size').textContent = p.sizes[selIdx].label; });
+      });
+
+      function updatePrice(){
+        const price = +(p.basePrice * p.sizes[selIdx].mult).toFixed(2);
+        document.getElementById('page-price').textContent = price.toFixed(2);
+        document.getElementById('sel-price').textContent = price.toFixed(2);
+      }
+      updatePrice();
+
+      document.getElementById('page-add').addEventListener('click', ()=>{
+        const qty = Number(document.getElementById('page-qty').value)||1;
+        const price = +(p.basePrice * p.sizes[selIdx].mult).toFixed(2);
+        addToCartWithSize(p.id, p.sizes[selIdx].label, price, qty);
+        flash('Added to cart');
+      });
+      document.getElementById('aside-add').addEventListener('click', ()=>{
+        const qty = Number(document.getElementById('sel-qty').value)||1;
+        const price = +(p.basePrice * p.sizes[selIdx].mult).toFixed(2);
+        addToCartWithSize(p.id, p.sizes[selIdx].label, price, qty);
+        flash('Added to cart');
+      });
+
+      document.getElementById('page-buy').addEventListener('click', ()=>{ flash('Buy now demo — go to checkout.'); location.hash = '#/'; setTimeout(()=>{ const el = document.getElementById('customer-name'); if(el) el.focus(); }, 300); });
+      document.getElementById('aside-buy').addEventListener('click', ()=>{ document.getElementById('page-buy').click(); });
+
+      // reviews submit
+      document.getElementById('rev-submit').addEventListener('click', ()=>{
+        const by = document.getElementById('rev-name').value.trim() || 'Anonymous';
+        const rating = Number(document.getElementById('rev-rating').value) || 5;
+        const txt = document.getElementById('rev-txt').value.trim();
+        if(!txt){ flash('Write something to submit'); return; }
+        p.reviews.unshift({by,rating,txt}); // add to top
+        const list = document.getElementById('reviews-list');
+        list.innerHTML = p.reviews.map(r=>`<div class='review'><strong>${r.by}</strong> — ${'★'.repeat(r.rating)}<div class='small'>${r.txt}</div></div>`).join('');
+        document.getElementById('rev-name').value=''; document.getElementById('rev-txt').value='';
+        flash('Thanks for your review');
+      });
+    }
+
+    // Add to cart with size meta
+    function addToCartWithSize(id,sizeLabel,price,qty=1){
+      const key = id + '::' + sizeLabel;
+      const p = PRODUCTS.find(x=>x.id===id);
+      if(!p) return;
+      if(!cart[key]) cart[key]={id:id,key:key,name:p.name + ' ('+sizeLabel+')',price:price,qty:0,image:p.images[0]};
+      cart[key].qty += Number(qty);
+      saveCart();
+    }
+
+    // CART UI & helpers
+    function saveCart(){ localStorage.setItem('eathealthy_cart',JSON.stringify(cart)); updateCartUI(); }
+    function setQty(key,qty){ if(cart[key]){ cart[key].qty = Math.max(0,Number(qty)); if(cart[key].qty===0) delete cart[key]; saveCart(); }}
+    function removeFromCart(key){ delete cart[key]; saveCart(); }
+
+    function computeSummary(){ let subtotal=0,count=0; Object.values(cart).forEach(item=>{ subtotal += item.price * item.qty; count += item.qty; }); const delivery = subtotal===0 ? 0 : (subtotal>=500 ? 0 : 40); const tax = +(subtotal * 0.05).toFixed(2); const total = +(subtotal + delivery + tax).toFixed(2); return {subtotal: +subtotal.toFixed(2), delivery, tax, total, count}; }
+
+    function updateCartUI(){ const itemsWrap = document.getElementById('cart-items'); if(!itemsWrap) return; itemsWrap.innerHTML=''; const emptyEl = document.getElementById('cart-empty'); const s = computeSummary(); document.getElementById('subtotal').textContent = s.subtotal.toFixed(2); document.getElementById('delivery-fee').textContent = s.delivery.toFixed(2); document.getElementById('tax').textContent = s.tax.toFixed(2); document.getElementById('total').textContent = s.total.toFixed(2); document.getElementById('cart-count').textContent = s.count; if(s.count===0){ if(emptyEl) emptyEl.style.display='block'; } else { if(emptyEl) emptyEl.style.display='none'; }
+      Object.values(cart).forEach(item=>{
+        const row = document.createElement('div'); row.className='cart-row';
+        row.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div style="flex:1">
+            <div style="font-weight:700">${item.name}</div>
+            <div class="small">₹${item.price} × <input type='number' min='1' value='${item.qty}' data-key='${item.key}' class='mini-qty' style='width:68px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)'></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800">₹${(item.price*item.qty).toFixed(2)}</div>
+            <div style="margin-top:6px"><button class='btn-small' data-remove='${item.key}'>Remove</button></div>
+          </div>
+        `;
+        itemsWrap.appendChild(row);
+      });
+    }
+
+    // Home events (search, sort, add buttons)
+    function attachHomeEvents(){
+      document.getElementById('product-list').addEventListener('click', e=>{
+        const add = e.target.closest('[data-add]');
+        const view = e.target.closest('[data-view]');
+        if(add){ const id = Number(add.getAttribute('data-add')); const p = PRODUCTS.find(x=>x.id===id); const sz = p.sizes[0]; const price = +(p.basePrice * sz.mult).toFixed(2); addToCartWithSize(id,sz.label,price,1); flash('Added to cart'); }
+        if(view){ const id = Number(view.getAttribute('data-view')); location.hash = '#product-'+id; }
+      });
+
+      document.getElementById('search').addEventListener('input', applyFilters);
+      document.getElementById('sort').addEventListener('change', applyFilters);
+
+      // cart interactions (delegated)
+      document.getElementById('cart-items').addEventListener('input', e=>{ if(e.target.classList.contains('mini-qty')){ const key = e.target.getAttribute('data-key'); setQty(key, e.target.value); } });
+      document.getElementById('cart-items').addEventListener('click', e=>{ const rem = e.target.closest('[data-remove]'); if(rem){ const key = rem.getAttribute('data-remove'); removeFromCart(key); } });
+
+      document.getElementById('checkout-btn').addEventListener('click', ()=>{ const keys = Object.keys(cart); if(keys.length===0){ flash('Cart empty'); return; } const name = document.getElementById('customer-name').value.trim(); const addr = document.getElementById('customer-address').value.trim(); if(!name||!addr){ flash('Enter name and address'); return; } const orderId = 'EH'+Date.now().toString().slice(-8); const s = computeSummary(); cart = {}; saveCart(); const result = document.getElementById('order-result'); result.style.display='block'; result.className='small'; result.innerHTML = `Order ${orderId} placed. Delivery: ${computeDeliveryDate()}. Total: ₹${s.total.toFixed(2)}.`; });
+
+      // view cart button
+      document.getElementById('view-cart').addEventListener('click', ()=>{ window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); });
+
+      // right-menu actions
+      document.getElementById('rm-profile').addEventListener('click', ()=>{ flash('Profile — demo (not implemented)'); });
+      document.getElementById('rm-orders').addEventListener('click', ()=>{ flash('My Orders — demo'); });
+      document.getElementById('rm-help').addEventListener('click', ()=>{ window.open('mailto:support@eathealthy.example','_blank'); });
+      document.getElementById('rm-cart').addEventListener('click', ()=>{ window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); });
+    }
+
+    function applyFilters(){ const q = document.getElementById('search').value.trim().toLowerCase(); const sort = document.getElementById('sort').value; let list = PRODUCTS.filter(p=> p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) ); if(sort==='price-asc') list.sort((a,b)=>a.basePrice-b.basePrice); if(sort==='price-desc') list.sort((a,b)=>b.basePrice-a.basePrice); renderProductsGrid(list); }
+
+    // helpers & UI
+    function flash(msg){ const prev = document.getElementById('flash'); if(prev) prev.remove(); const el = document.createElement('div'); el.id='flash'; el.textContent=msg; el.style.position='fixed'; el.style.right='20px'; el.style.bottom='20px'; el.style.padding='10px 14px'; el.style.background='rgba(212,175,55,0.12)'; el.style.color='white'; el.style.border='1px solid rgba(212,175,55,0.18)'; el.style.borderRadius='8px'; el.style.boxShadow='0 6px 18px rgba(0,0,0,0.6)'; document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
+
+    function computeDeliveryDate(){ const now = new Date(); const hour = now.getHours(); const base = hour < 17 ? 2 : 3; const extra = Math.floor(Math.random()*2); const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + base + extra); return d.toLocaleDateString(); }
+
+    // small SVG image generator (placeholder for products)
+    function makeMushroomDataURL(seed){ const colors = ['#111114','#101113','#0f1112']; const bg = colors[seed % colors.length]; const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360'> <rect width='100%' height='100%' fill='${bg}' /> <g transform='translate(40,30)'> <ellipse cx='220' cy='100' rx='210' ry='90' fill='#2b2b2c' /> <ellipse cx='140' cy='92' rx='18' ry='10' fill='#d4af37' /> <ellipse cx='220' cy='78' rx='14' ry='9' fill='#d4af37' /> <ellipse cx='320' cy='96' rx='12' ry='7' fill='#d4af37' /> <rect x='240' y='160' width='54' height='140' rx='20' fill='#8f6b3d' /> <rect x='236' y='156' width='62' height='12' rx='6' fill='#7e5b33' /> </g></svg>`; return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg); }
+
+    // INITIALIZE images and state
+    PRODUCTS.forEach((p,i)=>{ p.images = [makeMushroomDataURL(i), makeMushroomDataURL(i+3)]; });
+    cart = JSON.parse(localStorage.getItem('eathealthy_cart')||'{}');
+
+    // start router
+    window.addEventListener('hashchange', router); window.addEventListener('load', ()=>{ document.getElementById('year').textContent = new Date().getFullYear(); router(); updateCartUI(); });
+
+    // expose for dev
+    window.addToCartWithSize = addToCartWithSize; window.removeFromCart = removeFromCart; window.setQty = setQty;
+    // autosave cart
+    setInterval(()=>{ localStorage.setItem('eathealthy_cart',JSON.stringify(cart)); }, 4000);
+  </script>
+</body>
+</html>
